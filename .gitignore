@@ -41,6 +41,7 @@ Thumbs.db
 #cmake
 /build*
 /install
+/install-native
 /CMakeCache.txt
 /CMakeFiles/
 /Makefile
