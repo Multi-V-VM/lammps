@@ -178,7 +178,7 @@ else()
   # If cross-compiling, LAMMPS automatically links to a stub mpi impl.
   if(LAMMPS_FAASM)
     message(STATUS "Linking with Faasm's MPI Implementation")
-    target_link_libraries(lammps PUBLIC 
+    target_link_libraries(lammps PUBLIC
         ${FAASM_ROOT}/llvm-sysroot/lib/wasm32-wasi/libfaasmpi.a
         ${FAASM_ROOT}/llvm-sysroot/lib/wasm32-wasi/libfaabricmpi.a
     )
