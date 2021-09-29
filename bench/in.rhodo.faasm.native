@@ -1,7 +1,7 @@
 # Rhodopsin model
 
-variable	x index 8
-variable	y index 8
+variable	x index 2
+variable	y index 2
 variable	z index 1
 
 units           real
