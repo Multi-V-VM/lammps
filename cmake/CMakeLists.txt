@@ -25,20 +25,6 @@ set(LAMMPS_POTENTIALS_DIR ${LAMMPS_DIR}/potentials)
 
 find_package(Git)
 
-## Faasm additional linker flags, and definitions
-if(LAMMPS_FAASM)
-    set(FAASM_ROOT /usr/local/faasm)
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} \
-    	${FAASM_EXE_LINKER_FLAGS} \
-	-Xlinker --stack-first \
-        -Xlinker --export=__heap_base \
-        -Xlinker --export=__data_end \
-        -Xlinker --export=__wasm_call_ctors \
-        -Xlinker --max-memory=4294901760 \
-        -Wl,-z,stack-size=4194304 -Wl, \
-    ")
-endif()
-
 # by default, install into $HOME/.local (not /usr/local), so that no root access (and sudo!!) is needed
 if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
   set(CMAKE_INSTALL_PREFIX "$ENV{HOME}/.local" CACHE PATH "default install path" FORCE )
@@ -112,13 +98,7 @@ file(GLOB MAIN_SOURCES ${LAMMPS_SOURCE_DIR}/main.cpp)
 list(REMOVE_ITEM ALL_SOURCES ${MAIN_SOURCES})
 add_library(lammps ${ALL_SOURCES})
 add_executable(lmp ${MAIN_SOURCES})
-# Faasm additional libraries
-if(LAMMPS_FAASM)
-    set(FAASM_FUNC_LIBS faasm c-printscan-long-double)
-    target_link_libraries(lmp PRIVATE lammps ${FAASM_FUNC_LIBS})
-else()
-    target_link_libraries(lmp PRIVATE lammps)
-endif()
+target_link_libraries(lmp PRIVATE lammps)
 set_target_properties(lmp PROPERTIES OUTPUT_NAME ${LAMMPS_BINARY})
 install(TARGETS lmp EXPORT LAMMPS_Targets DESTINATION ${CMAKE_INSTALL_BINDIR})
 
@@ -178,11 +158,7 @@ else()
   # If cross-compiling, LAMMPS automatically links to a stub mpi impl.
   if(LAMMPS_FAASM)
     message(STATUS "Linking with Faasm's MPI Implementation")
-    target_link_libraries(lammps PUBLIC
-        ${FAASM_ROOT}/llvm-sysroot/lib/wasm32-wasi/libfaasmpi.a
-        ${FAASM_ROOT}/llvm-sysroot/lib/wasm32-wasi/libfaabricmpi.a
-    )
-    # target_link_libraries(lmp PRIVATE ${FAASM_ROOT}/llvm-sysroot/lib/wasm32-wasi/libmpi.a)
+    target_link_libraries(lammps PUBLIC faasmpi faabricmpi)
   else()
     file(GLOB MPI_SOURCES ${LAMMPS_SOURCE_DIR}/STUBS/mpi.c)
     add_library(mpi_stubs STATIC ${MPI_SOURCES})
