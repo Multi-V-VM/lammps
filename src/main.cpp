@@ -25,6 +25,10 @@
 #include "exceptions.h"
 #endif
 
+#if defined(__faasm)
+#include <faasm/faasm.h>
+#endif
+
 using namespace LAMMPS_NS;
 
 /* ----------------------------------------------------------------------
